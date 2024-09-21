@@ -126,7 +126,7 @@ class Dataset:
         }
         return pd.DataFrame.from_dict(data, orient="index", columns=self.features)
 
-    @classmethod
+
     def from_dataframe(cls, df: pd.DataFrame, label: str = None):
         """
         Creates a Dataset object from a pandas DataFrame
