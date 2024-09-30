@@ -214,3 +214,5 @@ if __name__ == '__main__':
     print(dataset.get_min())
     print(dataset.get_max())
     print(dataset.summary())
+    print(dataset.X)
+    print(dataset.y)
