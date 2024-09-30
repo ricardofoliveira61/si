@@ -33,7 +33,7 @@ def read_data_file(filename: str,
         X = raw_data
         y = None
 
-    return Dataset(X, y)
+    return Dataset(X=X, y=y)
 
 
 def write_data_file(filename: str,
