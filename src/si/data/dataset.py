@@ -199,11 +199,39 @@ class Dataset:
         return cls(X, y, features=features, label=label)
     
     def dropna(self):
+        """
+        Removes rows containing null values (NaNs) from the dataset.
+
+        Returns:
+            The updated Dataset object with rows containing null values removed.
+        """
         mask = np.any(np.isnan(self.X), axis=1)
         self.X = self.X[~mask]
         self.y = self.y[~mask]
 
         return self
+    
+    def fillna(self,value:float|str):
+
+        if isinstance(value,float|int):
+            self.X[np.where(np.isnan(self.X))] = value
+
+        elif isinstance(value,str) and value.upper() == "MEAN":
+            row_idx,col_idx= np.where(np.isnan(self.X))
+            means = self.get_mean()
+                
+            for row,col in zip(row_idx,col_idx):
+                self.X[row,col] = means[col]
+
+        else:
+            row_idx,col_idx= np.where(np.isnan(self.X))
+            medians = self.get_median()
+            
+            for row,col in zip(row_idx,col_idx):
+                self.X[row,col] = medians[col]
+        
+        return self
+
 
 if __name__ == '__main__':
     X = np.array([[1, 2, 3], [4, 5, 6]])
@@ -223,22 +251,34 @@ if __name__ == '__main__':
     print(dataset.X)
     print(dataset.y)
 
-    print("--------------------------")
+    print("\n--------------------------")
     print("**Drop Nan example**\n")
+
 
     X = np.array([[1, 2, np.nan],
                   [3, 4, 5],
                   [np.nan, 6, 7]])
     y = np.array([10, 20, 30])
     dataset = Dataset(X, y,label="Y")
-    print(dataset.X)
-    print(dataset.y)
-    print(dataset.has_label())
-    print(dataset.label)
+    print("Features values with missing values:\n",dataset.X)
+    print("Lables with missing values:",dataset.y)
     print("Shape of X with missing values:",dataset.X.shape)
     print("Shape of Y with missing values:",dataset.y.shape)
     dataset = dataset.dropna()
     print("Shape of X without missing values:",dataset.X.shape)
     print("Shape of y without missing values:",dataset.y.shape)
+    print("Features values without missing values:\n",dataset.X)
+    print("Labels without missing values:",dataset.y)
+
+
+    print("\n--------------------------")
+    print("**Fill Nan example**\n")
+    X = np.array([[30, 2, np.nan],
+                  [3, 4, 5],
+                  [np.nan, 6, 7]])
+    y = np.array([10, 20, 30])
+    dataset= Dataset(X, y)
     print(dataset.X)
-    print(dataset.y)
+    print("Median:",dataset.get_median())
+    dataset_median = dataset.fillna(value="median")
+    print("Features values with missing values equal to the mean:\n",dataset_median.X)

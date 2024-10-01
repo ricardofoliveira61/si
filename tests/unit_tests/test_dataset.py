@@ -45,4 +45,12 @@ class TestDataset(unittest.TestCase):
 
         # checking the dataset without missing values doesn't have missing values
         self.assertTrue(np.all(np.isnan(data_wo_missing.X)==False))
+    
+    def test_fill_na(self):
+        data_w_missing = read_csv(os.path.join(DATASETS_PATH, 'iris', 'iris_missing_data.csv'),features=True,label=True)
+        data_wo_missing = data_w_missing.fillna(value=0)
+
+        self.assertTrue(np.all(np.isnan(data_w_missing.X)==False))
+        self.assertEqual(data_w_missing.X.shape[0],data_wo_missing.X.shape[0])
+        self.assertEqual(data_w_missing.y.shape[0],data_wo_missing.y.shape[0])
         
