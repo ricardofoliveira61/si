@@ -313,3 +313,14 @@ if __name__ == '__main__':
     print("Median:",dataset.get_median())
     dataset_median = dataset.fillna(value="median")
     print("Features values with missing values equal to the mean:\n",dataset_median.X)
+
+    print("\n--------------------------")
+    print("**Remove sample by index**\n")
+    X = np.array([[30, 2, np.nan],
+                  [3, 4, 5],
+                  [np.nan, 6, 7]])
+    y = np.array([10, 20, 30])
+    dataset= Dataset(X, y)
+    print(dataset.X)
+    dataset_ = dataset.remove_by_index(index= 1)
+    print("\n",dataset.X)
