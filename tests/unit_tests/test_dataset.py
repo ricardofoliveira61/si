@@ -53,4 +53,13 @@ class TestDataset(unittest.TestCase):
         self.assertTrue(np.all(np.isnan(data_w_missing.X)==False))
         self.assertEqual(data_w_missing.X.shape[0],data_wo_missing.X.shape[0])
         self.assertEqual(data_w_missing.y.shape[0],data_wo_missing.y.shape[0])
-        
+    
+    def test_remove_by_index(self):
+        data = read_csv(os.path.join(DATASETS_PATH, 'iris', 'iris_missing_data.csv'),features=True,label=True)
+        data_ = read_csv(os.path.join(DATASETS_PATH, 'iris', 'iris_missing_data.csv'),features=True,label=True)
+        data_ = data_.remove_by_index(index=7)
+
+        self.assertFalse(np.array_equal(data.X[7,:], data_.X[7,:]))
+        self.assertGreater(data.X.shape[0],data_.X.shape[0])
+        self.assertGreater(data.y.shape[0],data_.y.shape[0])
+

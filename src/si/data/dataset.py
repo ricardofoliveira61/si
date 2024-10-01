@@ -212,6 +212,20 @@ class Dataset:
         return self
     
     def fillna(self,value:float|str):
+        """
+        Fills missing values (NaNs) in the dataset with a specified value or statistic.
+
+        Parameters
+        ----------
+        value (float|str): The value or statistic to fill NaNs with.
+            - If a float or integer, fills all NaNs with that value.
+            - If "MEAN", fills NaNs with the column-wise mean.
+            - If "MEDIAN", fills NaNs with the column-wise median.
+
+        Returns
+        ----------
+        The updated Dataset object with missing values filled.
+        """
 
         if isinstance(value,float|int):
             self.X[np.where(np.isnan(self.X))] = value
@@ -226,10 +240,27 @@ class Dataset:
         else:
             row_idx,col_idx= np.where(np.isnan(self.X))
             medians = self.get_median()
-            
+
             for row,col in zip(row_idx,col_idx):
                 self.X[row,col] = medians[col]
         
+        return self
+    
+    def remove_by_index(self,index:int):
+        """
+        Remove a samplpe by it's
+
+        Parameters
+        ----------
+        index: int
+            The sample to remove. The index start on the sample 0 
+        
+        Returns:
+        -----------
+        The updated Dataset object with the specified sample removed.
+        """
+        self.X = np.delete(self.X, index, 0)
+        self.y = np.delete(self.y, index)
         return self
 
 
