@@ -197,7 +197,13 @@ class Dataset:
         X = np.random.rand(n_samples, n_features)
         y = np.random.randint(0, n_classes, n_samples)
         return cls(X, y, features=features, label=label)
+    
+    def dropna(self):
+        mask = np.any(np.isnan(self.X), axis=1)
+        self.X = self.X[~mask]
+        self.y = self.y[~mask]
 
+        return self
 
 if __name__ == '__main__':
     X = np.array([[1, 2, 3], [4, 5, 6]])
@@ -214,5 +220,25 @@ if __name__ == '__main__':
     print(dataset.get_min())
     print(dataset.get_max())
     print(dataset.summary())
+    print(dataset.X)
+    print(dataset.y)
+
+    print("--------------------------")
+    print("**Drop Nan example**\n")
+
+    X = np.array([[1, 2, np.nan],
+                  [3, 4, 5],
+                  [np.nan, 6, 7]])
+    y = np.array([10, 20, 30])
+    dataset = Dataset(X, y,label="Y")
+    print(dataset.X)
+    print(dataset.y)
+    print(dataset.has_label())
+    print(dataset.label)
+    print("Shape of X with missing values:",dataset.X.shape)
+    print("Shape of Y with missing values:",dataset.y.shape)
+    dataset = dataset.dropna()
+    print("Shape of X without missing values:",dataset.X.shape)
+    print("Shape of y without missing values:",dataset.y.shape)
     print(dataset.X)
     print(dataset.y)
