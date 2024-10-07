@@ -72,9 +72,8 @@ class SelectPercentile(Transformer):
             # calculates the maximum number of features to keep based on the given percentile
             max_features = int (len(self.F)*self.percentile/100)
             # select the ties that must integrate the features
-            keep = ties[: max_features -mask.sum()]
             # changes the value of these features to True in the mask
-            mask[keep] = True
+            mask[ties[: max_features -mask.sum()]] = True
 
         features = np.array(dataset.features)[mask]
         
