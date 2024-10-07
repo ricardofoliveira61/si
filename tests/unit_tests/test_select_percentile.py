@@ -45,5 +45,3 @@ class TestSelectPercentile(TestCase):
         new_dataset = select_percentile.transform(self.dataset)
 
         self.assertEqual(new_dataset.X.shape[1],0)
-
-        
