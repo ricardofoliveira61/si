@@ -62,17 +62,22 @@ class SelectPercentile(Transformer):
             - A new Dataset object with the selected features
         
         """
+        # calculates the threshold for the scores
+        threshold= np.percentile(self.F,100-self.percentile)
+        # select the features with score higher than threshold
+        mask = self.F > threshold
+        # check if there is features with the same score as the threshold, the function where always returns two arrays but just the first one is necessary
+        ties = np.where(self.F == threshold)[0]
+        if len(ties) != 0:
+            # calculates the maximum number of features to keep based on the given percentile
+            max_features = int (len(self.F)*self.percentile/100)
+            # select the ties that must integrate the features
+            keep = ties[: max_features -mask.sum()]
+            # changes the value of these features to True in the mask
+            mask[keep] = True
 
-        # n_feat_select = round(self.percentile/100 * len(self.F))
-        # if n_feat_select != 0:
-
-        #     idxs = np.argsort(self.F)[-n_feat_select:]
-        #     features = np.array(dataset.features)[idxs]
-        #     return Dataset(X=dataset.X[:, idxs], y=dataset.y, features=list(features), label=dataset.label)
+        features = np.array(dataset.features)[mask]
+        
+        return Dataset(X=dataset.X[:, mask], y=dataset.y, features=list(features), label=dataset.label)
     
-        # else:
-        #     raise ValueError("Cannot select features using the specified percentile")
 
-        feat_select= np.percentile(self.F,100-self.percentile)
-        features = np.array(dataset.features)[self.F>=feat_select]
-        return Dataset(X=dataset.X[:, self.F>=feat_select], y=dataset.y, features=list(features), label=dataset.label)

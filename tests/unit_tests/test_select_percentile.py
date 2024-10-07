@@ -44,6 +44,6 @@ class TestSelectPercentile(TestCase):
         select_percentile.fit(self.dataset)
         new_dataset = select_percentile.transform(self.dataset)
 
-        self.assertEqual(new_dataset.X.shape[1],1)
+        self.assertEqual(new_dataset.X.shape[1],0)
 
         
