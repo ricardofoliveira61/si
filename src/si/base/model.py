@@ -4,6 +4,8 @@ from si.base.estimator import Estimator
 
 import numpy as np
 
+from si.data.dataset import Dataset
+
 
 class Model(Estimator, ABC):
     """
@@ -70,3 +72,20 @@ class Model(Estimator, ABC):
         """
         self.fit(dataset)
         return self.predict(dataset)
+    
+    @abstractmethod
+    def _score(self, dataset:Dataset, predictions:np.ndarray)->float:
+        """
+        Calculate the model's score on the dataset.
+        Abstract method that needs to be implemented by all subclasses.
+        """
+
+    
+    def score (self,dataset:Dataset)->Dataset:
+
+        if self.is_fitted():
+            predictions = self.predict(dataset= dataset)
+            self._score(dataset=dataset,predictions=predictions)
+
+        else:
+            raise ValueError('Your model is not fitted, please call the method .fit() first')
