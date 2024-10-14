@@ -19,5 +19,6 @@ class TestPCA(TestCase):
 
     def test_pca_transform(self):
         x_reduced = PCA(n_components=2).fit_transform(self.dataset)
-        self.assertEqual(x_reduced.X.shape[1], 2)
-        self.assertEqual(x_reduced.X.shape[0], self.dataset.shape()[0])
+        self.assertEqual(x_reduced.shape()[1], 2)
+        self.assertEqual(x_reduced.shape()[0], self.dataset.shape()[0])
+        
