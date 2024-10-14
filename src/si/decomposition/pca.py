@@ -16,6 +16,13 @@ class PCA(Transformer):
         """
         super().__init__(**kwargs)
         self.n_components = n_components
+        self.is_fitted = False
+        self.mean = None
+        self.covariance = None
+        self.e_values = None
+        self.principal_components = None
+        self.explained_variance = None
+        self.e_vectores = None
     
     def _fit(self, dataset:Dataset) -> "PCA":
         """
@@ -38,8 +45,8 @@ class PCA(Transformer):
 
         # computing the covariance matrix of the centered data and eigenvalue decomposition on the covariance matrix
         # rowvar = False ensures that the columns of the dataset are intrepreted as variables
-        covariance = np.cov(dataset.X, rowvar= False)
-        self.e_values, self.e_vectores = np.linalg.eig(covariance)
+        self.covariance = np.cov(dataset.X, rowvar= False)
+        self.e_values, self.e_vectores = np.linalg.eig(self.covariance)
         # garantees real eigenvalues since numerical approximations or rounding errors can lead to complex eigenvalues on a real valued covariance matrix
         self.e_values = np.real(self.e_values)
 
@@ -51,6 +58,8 @@ class PCA(Transformer):
         # Infer the explained variance
         self.explained_variance = self.e_values[principal_components_idx] / np.sum(self.e_values)
         self.principal_components = self.e_vectores[:, principal_components_idx]
+
+        self.is_fitted = True
 
         return self
         
@@ -77,5 +86,14 @@ class PCA(Transformer):
         X_reduced = np.dot(X_centered, self.principal_components)
 
         return Dataset(X_reduced, features=[f"PC{i+1}" for i in range(self.n_components)])
+    
+    def get_covariance(self):
+
+        if not self.is_fitted:
+            raise ValueError("PCA has not been fitted to your data.")
+        
+        else:
+            return self.covariance
+
 
         

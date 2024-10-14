@@ -1,20 +1,26 @@
 from unittest import TestCase
-
+import numpy as np
 from datasets import DATASETS_PATH
 import os
-
 from si.decomposition.pca import PCA
 from si.io.csv_file import read_csv
-
+from sklearn.decomposition import PCA as PCA_sk
+import pandas as pd
 
 
 class TestPCA(TestCase):
+
     def setUp(self):
         self.csv_file = os.path.join(DATASETS_PATH, 'iris', 'iris.csv')
         self.dataset = read_csv(filename=self.csv_file, features=True, label=True)
+        self.dataset_sk = pd.read_csv(self.csv_file)
     
     def test_pca_fit(self):
-        self.assertEqual
+        iris_fit = PCA(n_components=2).fit(self.dataset)
+        iris_fit_sklearn = PCA_sk(n_components=2).fit(self.dataset_sk.iloc[:, :4])
+
+        self.assertTrue(np.allclose(iris_fit.explained_variance[::-1], iris_fit_sklearn.explained_variance_ratio_))
+        self.assertTrue(np.allclose(iris_fit.get_covariance(), iris_fit_sklearn.get_covariance()))
         
 
     def test_pca_transform(self):
