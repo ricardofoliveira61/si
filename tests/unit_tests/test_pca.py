@@ -1,10 +1,12 @@
 from unittest import TestCase
 
-import numpy as np
 from datasets import DATASETS_PATH
 import os
+
 from si.decomposition.pca import PCA
 from si.io.csv_file import read_csv
+
+
 
 class TestPCA(TestCase):
     def setUp(self):
@@ -13,8 +15,9 @@ class TestPCA(TestCase):
     
     def test_pca_fit(self):
         self.assertEqual
+        
 
     def test_pca_transform(self):
         x_reduced = PCA(n_components=2).fit_transform(self.dataset)
-        self.assertEqual(x_reduced.shape[1], 2)
-        self.assertEqual(x_reduced.shape[0], self.dataset.shape[0])
+        self.assertEqual(x_reduced.X.shape[1], 2)
+        self.assertEqual(x_reduced.X.shape[0], self.dataset.shape()[0])
