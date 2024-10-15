@@ -19,8 +19,11 @@ class TestPCA(TestCase):
         iris_fit = PCA(n_components=2).fit(self.dataset)
         iris_fit_sklearn = PCA_sk(n_components=2).fit(self.dataset_sk.iloc[:, :4])
 
-        self.assertTrue(np.allclose(iris_fit.explained_variance[::-1], iris_fit_sklearn.explained_variance_ratio_))
-        self.assertTrue(np.allclose(iris_fit.get_covariance(), iris_fit_sklearn.get_covariance()))
+        self.assertTrue(np.allclose(iris_fit.explained_variance, iris_fit_sklearn.explained_variance_ratio_))
+        self.assertEqual(len(iris_fit.explained_variance),2)
+        self.assertEqual(len(iris_fit.components),2)
+        self.assertTrue(np.allclose(iris_fit.mean, iris_fit_sklearn.mean_))
+        
         
 
     def test_pca_transform(self):

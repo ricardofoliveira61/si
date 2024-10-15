@@ -20,7 +20,7 @@ class PCA(Transformer):
         self.mean = None
         self.covariance = None
         self.e_values = None
-        self.principal_components = None
+        self.components = None
         self.explained_variance = None
         self.e_vectores = None
     
@@ -36,7 +36,15 @@ class PCA(Transformer):
         Returns
         -------
         self: PCA
+
+        Raises
+        -------
+        ValueError;
+            If n_componets is 0 or greater than the number of features.
         """
+
+        if self.n_components == 0 or self.n_components> dataset.shape()[1]:
+            raise ValueError("n_components must be a positive integer less than or equal to the number of features.")
 
         # centering the data
         self.mean = dataset.get_mean()
@@ -51,13 +59,13 @@ class PCA(Transformer):
         self.e_values = np.real(self.e_values)
 
 
-        # infer the principal components
-        principal_components_idx = np.argsort(self.e_values) [-self.n_components:]
+        # infer the principal components, sorting them by descending order of eigenvalues
+        principal_components_idx = np.argsort(self.e_values) [-self.n_components:][::-1]
         
 
         # Infer the explained variance
         self.explained_variance = self.e_values[principal_components_idx] / np.sum(self.e_values)
-        self.principal_components = self.e_vectores[:, principal_components_idx]
+        self.components = self.e_vectores[:, principal_components_idx].T
 
         self.is_fitted = True
 
@@ -66,7 +74,7 @@ class PCA(Transformer):
 
     def _transform(self, dataset:Dataset)-> Dataset:
         """
-        Tranforms the intended dataset to the principal components.~
+        Tranforms the intended dataset to the principal components.
 
         Parameters
         ----------
@@ -83,11 +91,24 @@ class PCA(Transformer):
         X_centered = dataset.X - self.mean
 
         # reducing the dataset to the principal components
-        X_reduced = np.dot(X_centered, self.principal_components)
+        X_reduced = np.dot(X_centered, self.components.T)
 
-        return Dataset(X_reduced, features=[f"PC{i+1}" for i in range(self.n_components)])
+        return Dataset(X_reduced, y= dataset.y, features=[f"PC{i+1}" for i in range(self.n_components)], label= dataset.label)
     
-    def get_covariance(self):
+    def get_covariance(self)-> np.ndarray:
+        """
+        Retunrs the covariance matrix of the centered data.
+
+        Returns
+        -------
+        np.ndarray
+            - Covariance matrix
+
+        Raises
+        -------
+        ValueError
+            - If PCA has not been fitted to your data.
+        """
 
         if not self.is_fitted:
             raise ValueError("PCA has not been fitted to your data.")
