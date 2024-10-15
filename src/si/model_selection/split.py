@@ -1,7 +1,5 @@
 from typing import Tuple
-
 import numpy as np
-
 from si.data.dataset import Dataset
 
 
@@ -41,3 +39,56 @@ def train_test_split(dataset: Dataset, test_size: float = 0.2, random_state: int
     train = Dataset(dataset.X[train_idxs], dataset.y[train_idxs], features=dataset.features, label=dataset.label)
     test = Dataset(dataset.X[test_idxs], dataset.y[test_idxs], features=dataset.features, label=dataset.label)
     return train, test
+
+def stratified_train_test_split(dataset: Dataset, test_size: float = 0.2, random_state: int = 42) -> Tuple[Dataset, Dataset]:
+
+    """
+    Splits the dataset into training and testing sets while preserving the class distribution in each subset.
+
+    Parameters
+    ----------
+    dataset: Dataset
+        - Dataset object to split
+    test_size: float
+        - Size of the test set. By default, 20%
+    random_state: int
+        - Random seed for reproducibility
+    
+    Returns
+    -------
+    Tuple[Dataset, Dataset]
+        - A tuple where the first element is the training dataset and the second element is the testing dataset
+
+    Raises
+    -------
+    ValueError
+        - If test_size is not a float between 0 and 1
+    
+    """
+
+    if test_size <0 or test_size > 1:
+        raise ValueError("Test size must be between 0 and 1")
+    
+    # set random state
+    np.random.seed(random_state)
+
+    # get unique labels
+    labels,counts = np.unique(dataset.y, return_counts= True)
+
+    # initialize empty lists to store indices for training and testing sets
+    train_idx = []
+    test_idx = []
+
+    # spliting the data based on the labels
+    for label,count in zip(labels,counts):
+
+        idx = np.where(dataset.y == label)[0]
+        train_size = int(count * (1 - test_size))
+        np.random.shuffle(idx)
+        train_idx.extend(idx[:train_size])
+        test_idx.extend(idx[train_size:])       
+
+    train_dataset = Dataset(X=dataset.X[train_idx,:], y= dataset.y[train_idx], features= dataset.features, label= dataset.label)
+    test_dataset = Dataset( X = dataset.X[test_idx,:], y= dataset.y[test_idx], features= dataset.features, label= dataset.label)    
+
+    return train_dataset, test_dataset
