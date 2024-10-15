@@ -1,13 +1,11 @@
 from unittest import TestCase
-
 import numpy as np
 from datasets import DATASETS_PATH
-
 import os
 from si.io.csv_file import read_csv
-
 from si.model_selection.split import train_test_split
 from si.models.ridge_regression import RidgeRegression
+
 
 class TestRidgeRegressor(TestCase):
 

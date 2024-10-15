@@ -1,11 +1,10 @@
 from unittest import TestCase
 from datasets import DATASETS_PATH
-
 import os
 from si.clustering.k_means import KMeans
 from si.io.csv_file import read_csv
-
 import numpy as np
+
 
 class TestKMeans(TestCase):
 

@@ -1,8 +1,6 @@
 import os
 import unittest
-
 import numpy as np
-
 from si.data.dataset import Dataset
 from si.io.csv_file import read_csv
 from datasets import DATASETS_PATH

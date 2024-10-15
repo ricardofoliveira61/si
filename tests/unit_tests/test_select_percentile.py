@@ -1,13 +1,11 @@
 from unittest import TestCase
-
 import numpy as np
 from datasets import DATASETS_PATH
-
 import os
 from si.feature_selection.select_percentile import SelectPercentile
 from si.io.csv_file import read_csv
-
 from si.statistics.f_classification import f_classification
+
 
 class TestSelectPercentile(TestCase):
 

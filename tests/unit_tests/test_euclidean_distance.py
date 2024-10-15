@@ -1,12 +1,10 @@
 from unittest import TestCase
-
 import numpy as np
 from datasets import DATASETS_PATH
-
 import os
 from si.io.csv_file import read_csv
-
 from si.statistics.euclidean_distance import euclidean_distance
+
 
 class TestEuclideanDistance(TestCase):
 

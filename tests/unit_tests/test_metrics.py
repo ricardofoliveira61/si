@@ -1,8 +1,8 @@
 from unittest import TestCase
-
 import numpy as np
 from si.metrics.accuracy import accuracy
 from si.metrics.mse import mse
+
 
 class TestMetrics(TestCase):
 

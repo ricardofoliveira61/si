@@ -1,8 +1,6 @@
 from unittest import TestCase
-
 import numpy as np
 from datasets import DATASETS_PATH
-
 import os
 from si.statistics.cosine_distance import cosine_distance
 from si.io.csv_file import read_csv
