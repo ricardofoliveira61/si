@@ -1,5 +1,6 @@
 from unittest import TestCase
 import numpy as np
+from si.metrics.rmse import rmse
 from si.metrics.accuracy import accuracy
 from si.metrics.mse import mse
 
@@ -19,5 +20,14 @@ class TestMetrics(TestCase):
         y_pred = np.array([0,1,1.1,1,1,1,0])
 
         self.assertTrue(round(mse(y_true, y_pred), 3)==0.004)
+
+    def test_rmse(self):
+        
+        y_true = np.array([0.1,1.1,1,1,1,1,0])
+        y_pred = np.array([0,1,1.1,1,1,1,0])
+
+
+        print(rmse(y_true, y_pred))
+        self.assertTrue(round(rmse(y_true, y_pred), 3)== 0.065)
         
 
