@@ -64,38 +64,28 @@ class LassoRegression(Model):
 
         # gradient descent
         while i < self.max_iter and early_stopping < self.patience:
-            # predicted y
+
+            # predictions of y
             y_pred = np.dot(X, self.theta) + self.theta_zero
 
             for feature in range(n):
 
-                # compute the residuals
-                residuals = y_pred - dataset.y[:, feature]
+                # compute the residual for each feature
+                ## overal residual, done simply by the doing the true values minus the predicted values
+                overal_residual = dataset.y - y_pred
+                
+                ## compute the gradient for the feature, each observation of the feature is multiplied by the overal residual giving the impact of the feature in the prediction of the target variable for each sample
+                residual_feature = np.sum(X[:, feature] * overal_residual)
 
-                # compute the penalty
-                penalization_term = self.theta[feature] * (1 - self.alpha * (self.l1_penalty / m))
+                # solução encontrada na net
+                #residual_feature = np.sum(X[:,feature] * overal_residual + self.theta[feature] * X[:,feature]).
 
                 # updating the model parameters
-                self.theta[feature] = penalization_term - self.alpha * np.dot(residuals, X[:, feature]) / m
+                ## Divides the result of soft_threshold by the sum of squared values for the current feature np.sum(X[:, feature]**2) to normalize the update.
+                self.theta[feature] = self.soft_threshold(residual_feature,self.l1_penalty)/ np.sum(X[:, feature]**2)
 
-
-            # # computing and updating the gradient with the learning rate
-            # gradient = (self.alpha / m) * np.dot(y_pred - dataset.y, X)
-
-            # computing the penalty
-             # what is this ??????
-            # penalization_term = self.theta * (1 - self.alpha * (self.l2_penalty / m))
-            # penalty_term = np.sign(self.theta) * (np.abs(self.theta) - self.l1_penalty * self.alpha / m)
-
-            # updating the model parameters
-            # features thetas
-            self.theta = self.soft_threshold(residuals,self.l1_penalty)/
-            # self.theta = penalization_term - gradient
-
-            # theta zero
             self.theta_zero = (1/n)*np.sum(dataset.y) - np.dot(self.theta, np.sum(X,axis=0)/n)
-            # self.theta_zero = (1/n)*np.sum(dataset.y) - np.dot(np.sum(self.theta), np.sum(X,axis=0)/n)
-            # is this formula right?
+
 
             # compute the cost
             self.cost_history[i] = self.cost(dataset)
@@ -166,7 +156,31 @@ class LassoRegression(Model):
         return mse(dataset.y, predictions)
 
     
-    def soft_threshold(self, residual, l1_penalty: float) -> np.ndarray:
-        pass
+    def soft_threshold(self, residual, l1_penalty: float) -> float:
+
+        """
+        Compute the soft thresholding function for Lasso regularization
+        
+        Parameters
+        ----------
+        residual: float
+            - The residual value for a single feature
+
+        l1_penalty: float
+            - The L1 regularization parameter
+
+        Returns
+        -------
+        soft_threshold: float
+            - The soft thresholded value of the residual
+        """
+
+        if residual> l1_penalty:
+            return residual - l1_penalty
+        elif residual< -l1_penalty:
+            return residual + l1_penalty
+        else:
+            return 0.0
+        
    
 
