@@ -1,6 +1,6 @@
 import numpy as np
-from base.model import Model
-from data.dataset import Dataset
+from si.base.model import Model
+from si.data.dataset import Dataset
 from si.metrics.mse import mse
 
 
@@ -11,7 +11,7 @@ class LassoRegression(Model):
     eliminate coefficients of features that are not important for predicting the target variable.
     """
 
-    def __init__(self, l1_penalty:float, max_iter: int = 1000, patience: int = 5, scale:bool = True, **kwargs):
+    def __init__(self, l1_penalty:float = 1, max_iter: int = 1000, patience: int = 5, scale:bool = True, **kwargs):
 
         """
         Initialize the Lasso Regression model
@@ -69,23 +69,26 @@ class LassoRegression(Model):
             y_pred = np.dot(X, self.theta) + self.theta_zero
 
             for feature in range(n):
-
-                # compute the residual for each feature
-                ## overal residual, done simply by the doing the true values minus the predicted values
-                overal_residual = dataset.y - y_pred
+                # remove the feature j from the model
+                if feature == 0:
+                    theta_wo_feature = self.theta[1:]
+                    X_wo_feature = X[:, 1:]
+                elif feature == len(self.theta) - 1:
+                    theta_wo_feature = self.theta[:-1]
+                    X_wo_feature = X[:, :-1]
+                else:
+                    theta_wo_feature = np.concatenate([self.theta[:feature], self.theta[feature+1:]])
+                    X_wo_feature = np.concatenate([X[:, :feature], X[:, feature+1:]], axis=1)
                 
-                ## compute the gradient for the feature, each observation of the feature is multiplied by the overal residual giving the impact of the feature in the prediction of the target variable for each sample
-                residual_feature = np.sum(X[:, feature] * overal_residual)
+                # compute the gradient for the feature
+                residual_feature = np.sum(X[:,feature] *(dataset.y-np.sum(np.dot(X_wo_feature,theta_wo_feature))) )
 
-                # solução encontrada na net
-                #residual_feature = np.sum(X[:,feature] * overal_residual + self.theta[feature] * X[:,feature]).
-
-                # updating the model parameters
+                # updating theta j
                 ## Divides the result of soft_threshold by the sum of squared values for the current feature np.sum(X[:, feature]**2) to normalize the update.
                 self.theta[feature] = self.soft_threshold(residual_feature,self.l1_penalty)/ np.sum(X[:, feature]**2)
 
+            # updating theta zero
             self.theta_zero = (1/n)*np.sum(dataset.y) - np.dot(self.theta, np.sum(X,axis=0)/n)
-
 
             # compute the cost
             self.cost_history[i] = self.cost(dataset)
