@@ -76,16 +76,20 @@ class RandomForestClassifier(Model):
 
         for _ in range(self.n_estimators):
             # creates the bootstrap dataset
+                ## randomly choose the samples to integrate the bootstrap dataset with replacement
             samples = np.random.choice(np.arange(dataset.shape()[0]),size= dataset.shape()[0],replace= True)
+                ## randomly selects the features to integrate the bootstrap dataset w/o replacement
             features_idx = np.random.choice(np.arange(dataset.shape()[1]),size= self.max_features, replace= False)
+                ## selects the features name
             features = [dataset.features[idx] for idx in features_idx]
+                ## creates the bootstrap dataset object
             bootstrap_dataset = Dataset(X=dataset.X[samples][:, features_idx],y=dataset.y[samples],features=features,label=dataset.label)
 
             # fits the bootstrap dataset
             tree = DecisionTreeClassifier(min_sample_split= self.min_sample_split, max_depth=self.max_depth, mode=self.mode)
             tree.fit(bootstrap_dataset)
 
-            # adding the tree to the forest list  (features, tree)
+            # adds the tree to the forest list  (features, tree)
             self.trees.append((tree.dataset.features,tree))
 
 
@@ -107,17 +111,17 @@ class RandomForestClassifier(Model):
             - The predicted target values for the given dataset.
         """
         
-        # initialize the prections list
+        # initialize the predictions list
         predictions = []
         for features,tree in self.trees:
             # creates a mask to do a subset with only the features used in the tree.
             mask = [True if feature in features else False for feature in dataset.features]
-            # creates the subdatset Dataset object with the relevant features only
+            # creates the subdatset object with the relevant features only
             X_subet = Dataset(X=dataset.X[:,mask],y=dataset.y,features=features,label=dataset.label)
-            # preditcts and append the predictions
+            # preditcts and append the predictions for each tree in the forest
             predictions.append(tree.predict(X_subet))
         
-        # creates and 2D array. Rows are the samples and columns are the predictions for each tree in the forest
+        # creates and 2D array of the predictions. Rows are the samples and columns are the predictions for each tree in the forest
         predictions = np.array(predictions).T
 
         # for each row find the unique labels and counts the number of times it appears
@@ -126,7 +130,6 @@ class RandomForestClassifier(Model):
         # for each row find the label that appears most often and append it to the predictions list
         label_prediction = np.array([unique[np.argmax(counts)] for unique, counts in label_and_counts])
 
-        print(label_prediction)
         return label_prediction
 
     def _score(self, dataset: Dataset, predictions: np.ndarray) -> float:

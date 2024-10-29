@@ -1,13 +1,11 @@
 from unittest import TestCase
-
 from datasets import DATASETS_PATH
-
 import os
-
 from si.models.random_forest_classifier import RandomForestClassifier
 from si.io.data_file import read_data_file
 from si.model_selection.split import train_test_split
 from si.models.decision_tree_classifier import DecisionTreeClassifier
+
 
 class TestRandomForesst(TestCase):
 
