@@ -1,9 +1,6 @@
 from unittest import TestCase
-
 from datasets import DATASETS_PATH
-
 import os
-
 from si.ensemble.voting_classifier import VotingClassifier
 from si.io.data_file import read_data_file
 from si.model_selection.split import train_test_split
@@ -15,7 +12,6 @@ class TestVotingClassifier(TestCase):
 
     def setUp(self):
         self.csv_file = os.path.join(DATASETS_PATH, 'breast_bin', 'breast-bin.csv')
-
         self.dataset = read_data_file(filename=self.csv_file, label=True, sep=",")
 
         self.train_dataset, self.test_dataset = train_test_split(self.dataset)
