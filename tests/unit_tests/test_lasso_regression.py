@@ -41,4 +41,4 @@ class TestLassoRegressor(TestCase):
         
         score = lasso.score(self.test_dataset)
 
-        self.assertEqual(round(score, 2), round(mse(self.test_dataset.y,lasso.predict(self.test_dataset)),2))
+        self.assertEqual(round(score, 2), 5777.56)

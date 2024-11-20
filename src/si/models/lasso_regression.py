@@ -81,14 +81,14 @@ class LassoRegression(Model):
                     X_wo_feature = np.concatenate([X[:, :feature], X[:, feature+1:]], axis=1)
                 
                 # compute the gradient for the feature
-                residual_feature = np.sum(X[:,feature] *(dataset.y-np.sum(np.dot(X_wo_feature,theta_wo_feature))) )
+                residual_feature = np.dot(X[:,feature], (dataset.y - np.dot(X_wo_feature, theta_wo_feature)))
 
                 # updating theta j
                 ## Divides the result of soft_threshold by the sum of squared values for the current feature np.sum(X[:, feature]**2) to normalize the update.
                 self.theta[feature] = self.soft_threshold(residual_feature,self.l1_penalty)/ np.sum(X[:, feature]**2)
 
             # updating theta zero
-            self.theta_zero = (1/n)*np.sum(dataset.y) - np.dot(self.theta, np.sum(X,axis=0)/n)
+            self.theta_zero = np.mean(dataset.y) - np.dot(self.theta, np.mean(X, axis=0))
 
             # compute the cost
             self.cost_history[i] = self.cost(dataset)
