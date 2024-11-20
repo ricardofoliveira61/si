@@ -1,15 +1,12 @@
 from unittest import TestCase
-
 from datasets import DATASETS_PATH
-
 import os
-
 from si.io.data_file import read_data_file
 from si.metrics.accuracy import accuracy
 from si.model_selection.grid_search_cv import grid_search_cv
 from si.models.logistic_regression import LogisticRegression
-
 import numpy as np
+
 
 class TestGridSearchCV(TestCase):
 
@@ -44,4 +41,5 @@ class TestGridSearchCV(TestCase):
 
         # get the best score
         best_score = results_['best_score']
+
         self.assertEqual(np.round(best_score, 2), 0.97)
