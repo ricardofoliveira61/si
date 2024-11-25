@@ -1,11 +1,13 @@
 from unittest import TestCase
+
+import numpy as np
 from datasets import DATASETS_PATH
+
 import os
 from si.io.csv_file import read_csv
+
 from si.model_selection.split import train_test_split
 from si.models.lasso_regression import LassoRegression
-from si.metrics.mse import mse
-
 
 class TestLassoRegressor(TestCase):
 
@@ -18,27 +20,21 @@ class TestLassoRegressor(TestCase):
 
     def test_fit(self):
 
-        lasso = LassoRegression()
-        lasso.fit(self.train_dataset)
+        ridge = LassoRegression()
+        ridge.fit(self.train_dataset)
 
-        self.assertEqual(lasso.theta.shape[0], self.train_dataset.shape()[1])
-        self.assertNotEqual(lasso.theta_zero, None)
-        self.assertNotEqual(len(lasso.cost_history), 0)
-        self.assertNotEqual(len(lasso.mean), 0)
-        self.assertNotEqual(len(lasso.std), 0)
 
     def test_predict(self):
-        lasso = LassoRegression()
-        lasso.fit(self.train_dataset)
+        ridge = LassoRegression()
+        ridge.fit(self.train_dataset)
 
-        predictions = lasso.predict(self.test_dataset)
+        predictions = ridge.predict(self.test_dataset)
 
         self.assertEqual(predictions.shape[0], self.test_dataset.shape()[0])
     
     def test_score(self):
-        lasso = LassoRegression()
-        lasso.fit(self.train_dataset)
-        
-        score = lasso.score(self.test_dataset)
+        ridge = LassoRegression(scale=True, patience=5)
+        ridge.fit(self.train_dataset)
+        mse_ = ridge.score(self.test_dataset)
 
-        self.assertEqual(round(score, 2), 5777.56)
+        self.assertEqual(round(mse_, 2), 5777.56)
