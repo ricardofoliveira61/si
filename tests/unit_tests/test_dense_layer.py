@@ -1,16 +1,13 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
-
 import numpy as np
-
 from datasets import DATASETS_PATH
-
 import os
-
 from si.io.data_file import read_data_file
 from si.model_selection.split import train_test_split
 from si.neural_networks.layers import DenseLayer
 from si.neural_networks.optimizers import Optimizer
+
 
 class MockOptimizer(Optimizer):
 

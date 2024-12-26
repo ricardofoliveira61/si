@@ -1,8 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import copy
-
 import numpy as np
-
 from si.neural_networks.optimizers import Optimizer
 
 
@@ -141,3 +139,111 @@ class DenseLayer(Layer):
             The shape of the output of the layer.
         """
         return (self.n_units,) 
+    
+class Dropout(Layer):
+    """
+    The Dropout layer randomly sets input units to 0 with a frequency of probability at each step during training time,
+    which helps prevent overfitting. Inputs not set to 0 are scaled up by 1 / (1 - probability) such that
+    the sum over all inputs is unchanged.
+    """
+    
+    def __init__(self, probability: float):
+        """
+        Initializes the dropout layer class
+
+        Parameters
+        ----------
+        probability: float
+            - The probability of dropping out units in the layer.
+        
+        Raises
+        --------
+        AssertionError
+            - If the probability given is not a value between 0 and 1
+        """
+        
+        # checks if the probability is a value between 0 and 1 
+        assert probability<=1 and probability>=0, "Probability must be a number between 0 and 1"
+
+        # attributes
+        self.probability = probability
+
+        # parameters
+        self.input = None
+        self.mask = None
+        self.input = None
+        self.output = None
+
+    def forward_propagation(self, input:np.ndarray, training:bool=False)-> np.ndarray:
+        """
+        Perform forward propagation on the given input. 
+
+
+        Parameters
+        ----------
+        input: numpy.ndarray
+            - The input to the layer.
+
+        training: bool
+            - Whether the layer is in training mode or in inference mode. False by default
+
+        Returns
+        -------
+        numpy.ndarray
+        - The output of the layer.
+        """
+        self.input = input
+
+        if training:
+            # computes the scalling factor
+            scaling_factor = 1/(1-self.probability)
+            # computes the mask
+            self.mask= np.random.binomial(n= 1,p= 1-self.probability,size= input.shape)
+            # performs dropout operation on the input
+            self.output = input * self.mask * scaling_factor
+
+            return self.output
+
+        else:
+            return input
+
+    def backward_propagation(self, output_error:np.ndarray)-> np.ndarray:
+        """
+        Perform backward propagation on the given output error.
+
+        Parameters
+        ----------
+        output_error: numpy.ndarray
+            - The backpropagated error of the subsequet layer.
+        
+        Returns
+        -------
+        numpy.ndarray
+            - The input error of the layer.
+        """
+
+        return output_error*self.mask
+    
+
+    def output_shape(self)-> tuple:
+        """
+        Returns the output shape
+
+        Returns
+        -------
+        tuple
+            - The shape of the output of the layer.
+        """
+
+        return self.input_shape()
+
+    def parameters(self)->int:
+        """
+        Returns the number of parameters of the layer.
+
+        Returns
+        -------
+        0:int
+            - Dropout layer do not have learnable parameters
+        """
+        return 0
