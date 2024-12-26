@@ -1,5 +1,4 @@
 from abc import abstractmethod
-
 import numpy as np
 
 
@@ -131,3 +130,51 @@ class BinaryCrossEntropy(LossFunction):
         # Avoid division by zero
         p = np.clip(y_pred, 1e-15, 1 - 1e-15)
         return - (y_true / p) + (1 - y_true) / (1 - p)
+
+class CategoricalCrossEntropy(LossFunction):
+    """
+    Categorical cross entropy loss function.
+    """
+
+    def loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
+        """
+        Calculates the categorical cross-entropy loss.
+
+        Parameters
+        ----------
+        y_true: np.ndarray
+            - The true labels, one-hot encoded.
+
+        y_pred: np.ndarray
+            - The predicted probabilities.
+
+        Returns
+        -------
+        float: 
+            - The calculated categorical cross-entropy loss.
+        """
+
+        predicted = np.clip(y_pred, 1e-15, 1 - 1e-15)
+
+        return -np.sum(y_true*np.log(predicted))
+
+    def derivative(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+        """
+        Calculates the gradient of the categorical cross-entropy loss.
+
+        Parameters
+        ----------
+        y_true: np.ndarray
+        - The true labels, one-hot encoded.
+        y_pred: np.ndarray
+        - The predicted probabilities.
+        
+        Returns
+        -------
+        np.ndarray:
+        - The gradient of the loss with respect to the predictions.
+        """
+
+        predicted = np.clip(y_pred, 1e-15, 1 - 1e-15)
+
+        return -y_true/predicted
